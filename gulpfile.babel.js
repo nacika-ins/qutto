@@ -3,7 +3,7 @@ import babel from 'gulp-babel'
 
 gulp.task('default', () => {
   gulp
-  .src('src/app.js')
-  .pipe(babel())
-  .pipe(gulp.dest('dist'))
+    .src('src/app.js')
+    .pipe(babel())
+    .pipe(gulp.dest('dist'))
 })
