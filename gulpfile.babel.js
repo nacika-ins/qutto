@@ -1,9 +1,17 @@
 import gulp from 'gulp'
 import babel from 'gulp-babel'
+import zip from 'gulp-zip'
 
 gulp.task('default', () => {
   gulp
-    .src('src/app.js')
+    .src('./src/**/*.js')
     .pipe(babel())
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('./'))
+})
+
+gulp.task('build', () => {
+  gulp
+    .src(['./index.js','./node_modules/*'])
+    .pipe(zip('qutto.zip'))
+    .pipe(gulp.dest('./'))
 })

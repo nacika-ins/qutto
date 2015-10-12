@@ -24,6 +24,8 @@
   "devDependencies": {
     "babel": "^5.8.23",
     "gulp": "^3.9.0",
-    "gulp-babel": "^5.2.1"
-  }
+    "gulp-babel": "^5.2.1",
+    "gulp-zip": "^3.0.2"
+  },
+  "dependencies": {}
 }
