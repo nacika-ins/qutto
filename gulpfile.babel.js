@@ -11,7 +11,7 @@ gulp.task('default', () => {
 
 gulp.task('build', () => {
   gulp
-    .src(['./index.js','./node_modules/*'])
+    .src(['./index.js','./node_modules/md5hex.js'])
     .pipe(zip('qutto.zip'))
     .pipe(gulp.dest('./'))
 })
