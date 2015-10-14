@@ -1,9 +1,27 @@
-import md5hex from 'md5hex'
+import random from 'randomstring'
 import doc from 'dynamodb-doc'
 
 const dynamo = new doc.DynamoDB()
 
-const shorten = (input) => md5hex(input)
+const uid = () => {
+  const tmp = random.generate(7)
+  const uniqParams = {
+    "TableName": "qutto",
+    "Key": {
+      "shorten": tmp
+    }
+  }
+  dynamo.getItem(uniqParams, (err, data) => {
+    console.log(tmp)
+    if (err) {
+      context.fail(err)
+    }
+    if (data.length < 1) {
+      return tmp
+    }
+    return uid()
+  })
+}
 
 exports.handler = (event, context) => {
 
@@ -11,7 +29,7 @@ exports.handler = (event, context) => {
 
   switch (operation) {
     case 'shorten':
-      const shortenUrl = shorten(event.url)
+      const shortenUrl = uid()
       const shortenParams = {
         "TableName": "qutto",
         "Item": {
