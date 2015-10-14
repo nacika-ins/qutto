@@ -7,25 +7,24 @@ const shorten = (input) => md5hex(input)
 
 exports.handler = (event, context) => {
 
-  const dynamoCallback = (err, data) => {
-    if (err) {
-      context.fail(err)
-    }
-    context.succeed(data)
-  }
   const operation = event.operation
 
   switch (operation) {
     case 'shorten':
+      const shortenUrl = shorten(event.url)
       const shortenParams = {
         "TableName": "qutto",
         "Item": {
-          "shorten": shorten(event.url),
+          "shorten": shortenUrl,
           "url": event.url
-        },
-        "ReturnValues": "ALL_OLD"
+        }
       }
-      dynamo.putItem(shortenParams, dynamoCallback)
+      dynamo.putItem(shortenParams, (err, data) => {
+        if (err) {
+          context.fail(err)
+        }
+        context.succeed({"shorten": shortenUrl})
+      })
       break
     case 'deshorten':
       const deshortenParams = {
@@ -34,7 +33,12 @@ exports.handler = (event, context) => {
           "shorten": event.shorten
         }
       }
-      dynamo.getItem(deshortenParams, dynamoCallback)
+      dynamo.getItem(deshortenParams, (err, data) => {
+        if (err) {
+          context.fail(err)
+        }
+        context.succeed(data)
+      })
       break
   }
 
