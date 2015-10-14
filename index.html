@@ -39,10 +39,12 @@
     var $triggerShouten = $('#js--trigger--shorten');
     $triggerShouten.on('click', function(event) {
       event.preventDefault();
+      var data = {url: $('#js--input--url').val()};
       $.ajax({
-        url: "https://5sbivlbdhf.execute-api.ap-northeast-1.amazonaws.com/prod/shourten",
-        type: "json",
-        data: {url: $('#js--input--url').val()},
+        url: "https://5sbivlbdhf.execute-api.ap-northeast-1.amazonaws.com/prod/shorten",
+        contentType: "application/json",
+        dataType: "json",
+        data: JSON.stringify(data),
         method: "POST",
         success: function(data, textStatus, jqXHR) {
           console.log(data);
