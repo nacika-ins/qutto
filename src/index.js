@@ -9,17 +9,19 @@ const generateShortUrl = () => {
     const params = {
       "TableName": "qutto",
       "Key": {
-        "shorten": tmp
+        "shorten": shortUrl
       }
     }
     dynamo.getItem(params, (err, data) => {
       if (err) {
         reject(err)
       }
+      console.log(data)
+      resolve(shortUrl)
       if (data.length < 1) {
         resolve(shortUrl)
       }
-      generateUniqUrl().then((shortUrl) => {
+      generateShortUrl().then((shortUrl) => {
         resolve(shortUrl)
       })
     })
@@ -35,7 +37,7 @@ const save = (url, shortUrl) => {
            "url": url
          }
     }
-    dynamo.putItem(shortenParams, (err, data) => {
+    dynamo.putItem(params, (err, data) => {
       if (err) {
         reject(err)
       }
