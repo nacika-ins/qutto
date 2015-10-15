@@ -1,5 +1,6 @@
 import random from 'randomstring'
 import doc from 'dynamodb-doc'
+import _ from 'underscore'
 
 const dynamo = new doc.DynamoDB()
 
@@ -16,9 +17,8 @@ const generateShortUrl = () => {
       if (err) {
         reject(err)
       }
-      console.log(data)
       resolve(shortUrl)
-      if (data.length < 1) {
+      if (_.isEmpty(data)) {
         resolve(shortUrl)
       }
       generateShortUrl().then((shortUrl) => {
