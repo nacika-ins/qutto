@@ -11,7 +11,7 @@ gulp.task('clean', () => {
 gulp.task('compile', () => {
   gulp
     .src('src/**/*.js')
-    .pipe(babel())
+    .pipe(babel({ optional: ['runtime'] }))
     .pipe(gulp.dest('dist/'))
 })
 
