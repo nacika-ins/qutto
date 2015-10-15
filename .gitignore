@@ -30,4 +30,8 @@ node_modules/**
 index.js
 
 # build files
-qutto.zip
+dist.zip
+dist
+
+# vim swap files
+*.swp
