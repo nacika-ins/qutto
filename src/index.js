@@ -3,23 +3,61 @@ import doc from 'dynamodb-doc'
 
 const dynamo = new doc.DynamoDB()
 
-const uid = () => {
-  const tmp = random.generate(7)
-  const uniqParams = {
-    "TableName": "qutto",
-    "Key": {
-      "shorten": tmp
+const generateShortUrl = () => {
+  return new Promise((resolve, reject) => {
+    const shortUrl = random.generate(7)
+    const params = {
+      "TableName": "qutto",
+      "Key": {
+        "shorten": tmp
+      }
     }
-  }
-  dynamo.getItem(uniqParams, (err, data) => {
-    console.log(tmp)
-    if (err) {
-      context.fail(err)
+    dynamo.getItem(params, (err, data) => {
+      if (err) {
+        reject(err)
+      }
+      if (data.length < 1) {
+        resolve(shortUrl)
+      }
+      generateUniqUrl().then((shortUrl) => {
+        resolve(shortUrl)
+      })
+    })
+  })
+}
+
+const save = (url, shortUrl) => {
+  return new Promise((resolve, reject) => {
+    const params = {
+      "TableName": "qutto",
+         "Item": {
+           "shorten": shortUrl,
+           "url": url
+         }
     }
-    if (data.length < 1) {
-      return tmp
+    dynamo.putItem(shortenParams, (err, data) => {
+      if (err) {
+        reject(err)
+      }
+      resolve({"shorten": shortUrl})
+    })
+  })
+}
+
+const find = (shortUrl) => {
+  return new Promise((resolve, reject) => {
+    const params = {
+      "TableName": "qutto",
+      "Key": {
+        "shorten": shortUrl
+      }
     }
-    return uid()
+    dynamo.getItem(params, (err, data) => {
+      if (err) {
+        reject(err)
+      }
+      resolve(data)
+    })
   })
 }
 
@@ -29,34 +67,15 @@ exports.handler = (event, context) => {
 
   switch (operation) {
     case 'shorten':
-      const shortenUrl = uid()
-      const shortenParams = {
-        "TableName": "qutto",
-        "Item": {
-          "shorten": shortenUrl,
-          "url": event.url
-        }
-      }
-      dynamo.putItem(shortenParams, (err, data) => {
-        if (err) {
-          context.fail(err)
-        }
-        context.succeed({"shorten": shortenUrl})
-      })
+      generateShortUrl()
+        .then((shortUrl) => save(event.url, shortUrl))
+        .then((result) => context.succeed(result))
+        .catch((error) => context.fail(error))
       break
     case 'deshorten':
-      const deshortenParams = {
-        "TableName": "qutto",
-        "Key": {
-          "shorten": event.shorten
-        }
-      }
-      dynamo.getItem(deshortenParams, (err, data) => {
-        if (err) {
-          context.fail(err)
-        }
-        context.succeed(data)
-      })
+      find(event.shorten)
+        .then((result) => context.succeed(result))
+        .catch((error) => context.fail(error))
       break
   }
 
